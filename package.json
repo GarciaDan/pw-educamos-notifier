@@ -1,0 +1,31 @@
+{
+  "name": "pw-educamos-notifier",
+  "version": "1.0.0",
+  "description": "A Playwright-based bot that polls the CLM Educamos platform and forwards received messages to Telegram using PageObject model",
+  "main": "app.ts",
+  "scripts": {
+    "setup": "npm install && npx playwright install-deps && npx playwright install",
+    "once": "NODE_PATH=./lib ts-node app.ts",
+    "start-pm2": "npm run once && sleep 30",
+    "start-service": "NODE_PATH=./lib ts-node service.ts",
+    "pogen-inline": "npx ts-node tools/po-codegen-inline.ts"
+  },
+  "keywords": [
+    "playwright",
+    "educamos",
+    "telegram",
+    "bot"
+  ],
+  "author": "Daniel Garcia <contacto@danigarcia.org>",
+  "license": "GNU GPLv3",
+  "devDependencies": {
+    "@playwright/test": "^1.47.1",
+    "@types/node": "^22.5.5",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.47.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
