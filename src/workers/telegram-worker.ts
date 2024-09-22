@@ -45,11 +45,18 @@ export default class TelegramWorker {
     const isResponseText = educamosMsg.isResponse ? "(Respuesta)" : "";
     const attachmentText =
       educamosMsg?.attachments?.length > 0 ? "Contiene adjuntos" : "";
-    const messageBody = `Recibido mensaje el ${educamosMsg.date}
+    let messageBody = `Recibido mensaje el ${educamosMsg.date}
   DE:     ${educamosMsg.from} ${isResponseText}
-  ASUNTO: ${educamosMsg.subject}
-  CENTRO: ${educamosMsg.centre}
-  GRUPO:  ${educamosMsg.group}
+  ASUNTO: ${educamosMsg.subject}`;
+  if(educamosMsg.centre) {
+    messageBody += `
+  CENTRO: ${educamosMsg.centre}`;
+  }
+  if(educamosMsg.body) {
+    messageBody += `
+  GRUPO:  ${educamosMsg.group}`;
+  }
+  messageBody += `
   ---
   ${educamosMsg.body}
   

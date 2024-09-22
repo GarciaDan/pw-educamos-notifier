@@ -34,6 +34,7 @@ export default class EducamosWorker {
         isResponse: false,
         from: "Educamos Notifier Bot",
         centre: "",
+        group: "",
         body: err,
       };
       return [errorMessage];
