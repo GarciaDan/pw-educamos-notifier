@@ -52,7 +52,7 @@ export default class TelegramWorker {
     messageBody += `
   CENTRO: ${educamosMsg.centre}`;
   }
-  if(educamosMsg.body) {
+  if(educamosMsg.group) {
     messageBody += `
   GRUPO:  ${educamosMsg.group}`;
   }
