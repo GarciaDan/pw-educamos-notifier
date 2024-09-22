@@ -9,7 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "*": ["lib/*"]
+      "*": ["src/*"]
     }
   },
   "include": ["**/*.ts"]

@@ -55,7 +55,7 @@ export default class PageObject {
         if (parentFrame) {
           // Case 2.1.1 It has parent, it's not a frame and parent is a frame - Set frame as parent's
           this.frame = this.parent.frame;
-          return this.frame
+          return this.frame;
         }
       }
     }
@@ -75,18 +75,12 @@ export default class PageObject {
   }
 
   getSelector(selectorName: string): string {
-    if (selectorName && this.selectors.has(selectorName)) {
-      const selector = this.selectors.get(selectorName);
-      if (selector) {
-        return selector;
-      } else {
-        throw new Error(
-          `getSelector(): no locator found for element '${selectorName}'`
-        );
-      }
+    const selector = this.selectors.get(selectorName);
+    if (selector) {
+      return selector;
     } else {
       throw new Error(
-        `getSelector(): no locator found for element '${selectorName}'`
+        `getSelector(): no selector found for element '${selectorName}'`
       );
     }
   }
@@ -184,20 +178,18 @@ export default class PageObject {
     clearBeforeType: boolean = true,
     hideLog: boolean = false
   ): Promise<Locator> {
+    const element = await this.getElement(selectorName);
     if (clearBeforeType) {
-      const element = await this.getElement(selectorName);
-      if (clearBeforeType) {
-        await element.fill(text);
-        return element;
-      } else {
-        const currentText = await this.getValue(selectorName);
-        return await this.type(
-          selectorName,
-          `${currentText}${text}`,
-          false,
-          hideLog
-        );
-      }
+      await element.fill(text);
+      return element;
+    } else {
+      const currentText = await this.getValue(selectorName);
+      return await this.type(
+        selectorName,
+        `${currentText}${text}`,
+        false,
+        hideLog
+      );
     }
   }
 
