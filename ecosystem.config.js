@@ -4,7 +4,7 @@ module.exports = {
             name: "pw-educamos-notifier",
             script: "npm",
             automation: false,
-            args: "run start"
+            args: "run start-pm2"
         }
     ]
 }
