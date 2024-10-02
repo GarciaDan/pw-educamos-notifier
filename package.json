@@ -6,7 +6,6 @@
   "scripts": {
     "setup": "npm install && npx playwright install-deps && npx playwright install",
     "once": "NODE_PATH=./src ts-node app.ts",
-    "start-pm2": "npm run once && sleep 600",
     "start-service": "NODE_PATH=./src ts-node service.ts",
     "pogen-inline": "npx ts-node tools/po-codegen-inline.ts"
   },
