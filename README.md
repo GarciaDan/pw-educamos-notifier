@@ -81,16 +81,24 @@ pm2 set pm2-logrotate:compress true
 pm2 set pm2-logrotate:retain 2
 ```
 
-By default, the script `start-pm2` triggers the application and sleeps for 30 seconds. You can edit that value in the `package.json` and change it for the value that better suits to you.
+By default, the script `once` triggers a single polling operation.
 ```
    "scripts": {
      ...
-     "start-pm2": "npm run once && sleep 30",
+     "once": "NODE_PATH=./src ts-node app.ts",
      ...
    }
 ```
 
-Once this is done, add the application to pm2
+However, pm2 is configured by default to re-trigger every 30 minutes. You can change this value changing the parameter `cron_restart` in the file `ecosystem.config.js`:
+```
+{
+  ...
+  cron_restart: "*/30 * * * *",
+}
+```
+
+Then start the service and save it into pm2 configuration:
 ```
 pm2 start ecosystem.config.js --only pw-educamos-notifier
 pm2 save
