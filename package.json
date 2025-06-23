@@ -18,13 +18,13 @@
   "author": "Daniel Garcia <contacto@danigarcia.org>",
   "license": "GNU GPLv3",
   "devDependencies": {
-    "@playwright/test": "^1.47.1",
-    "@types/node": "^22.5.5",
-    "axios": "^1.7.7",
-    "dotenv": "^16.4.5",
-    "node-cron": "^3.0.3",
-    "playwright": "^1.47.1",
+    "@playwright/test": "^1.53.1",
+    "@types/node": "^24.0.3",
+    "axios": "^1.10.0",
+    "dotenv": "^16.5.0",
+    "node-cron": "^4.1.1",
+    "playwright": "^1.53.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.8.3"
   }
 }
