@@ -52,7 +52,9 @@ export default class EducamosWorker {
     };
 
     try {
-      Logger.info(`Sending ${message.format} message with ${message.message} attachments: ${message.message}`);
+      Logger.info(
+        `Sending ${message.format} message with ${message.message} attachments: ${message.message}`
+      );
       await axios.request(options);
     } catch (err) {
       console.error("Error sending message: " + err);
@@ -97,15 +99,14 @@ export default class EducamosWorker {
       await loginPO.navigate(this.loginUrl);
       Logger.info(`Logging in`);
       await loginPO.doLogin(this.username, this.password);
-  
+
       const sideMenuPO = new SideMenuPageObject(page);
       const botonAvisos = await sideMenuPO.getAvisos();
       await expect(botonAvisos).toBeVisible();
       Logger.info(`Login successful`);
-    } catch(err) {
+    } catch (err) {
       Logger.error("Error logging in Educamos platform: " + err);
     }
-    
   }
 
   private getCurrentFormattedDate(): string {
@@ -126,41 +127,60 @@ export default class EducamosWorker {
     filter: EducamosMessageFilter = { leido: false }
   ): Promise<Array<EducamosMessage>> {
     let currentMessages: Array<EducamosMessage> = [];
+
     const messageListPageObject = new MessageListPageObject(page);
 
     page.on("request", async (request) => {
-      if (
-        request.url() == `${defaults.baseUrl}${defaults.endpoints.messages}`
-      ) {
-        const headers = await request.allHeaders();
-        this.authorization = headers["authorization"];
-      }
-    });
-    page.on("response", async (response) => {
-      if (
-        response.url() == `${defaults.baseUrl}${defaults.endpoints.messages}`
-      ) {
-        currentMessages = JSON.parse(
-          (await response.body()).toString()
-        ) as Array<EducamosMessage>;
-        Logger.info(`Retrieved ${currentMessages?.length ?? 0} messages from Educamos backend`);
-        const filterKeys = Object.keys(filter);
-        for (let filterKey of filterKeys) {
-          currentMessages = currentMessages.filter((m) => {
-            if (typeof m[filterKey] === "string") {
-              return m[filterKey].includes(filter[filterKey]);
-            } else {
-              return m[filterKey] == filter[filterKey];
-            }
-          });
+      try {
+        if (
+          request.url() == `${defaults.baseUrl}${defaults.endpoints.messages}`
+        ) {
+          const headers = await request.allHeaders();
+          this.authorization = headers["authorization"];
         }
+      } catch (err) {
+        Logger.error("getMessages: request error: " + err);
       }
     });
 
     await page.goto(`${defaults.baseUrl}${defaults.pages.messages}`);
     const messageButton = await messageListPageObject.getNewMessageButton();
     await expect(messageButton).toBeVisible();
-    Logger.info(`There are ${currentMessages?.length ?? 0} unread messages.`);
+    const response = await page.waitForResponse((response) =>
+      response.url().includes(defaults.endpoints.messages)
+    );
+
+    await expect(response.status()).toBe(200);
+
+    currentMessages = JSON.parse(
+      (await response.body()).toString()
+    ) as Array<EducamosMessage>;
+    Logger.info(
+      `Retrieved ${currentMessages?.length ?? 0} messages from Educamos backend`
+    );
+    const filterKeys = Object.keys(filter);
+    for (let filterKey of filterKeys) {
+      currentMessages = currentMessages.filter((m) => {
+        if (typeof m[filterKey] === "string") {
+          return m[filterKey].includes(filter[filterKey]);
+        } else {
+          return m[filterKey] == filter[filterKey];
+        }
+      });
+    }
+    /*
+    await Promise.all([
+      await page.waitForResponse((resp) => {
+        Logger.info("Body: " + resp.body());
+        console.log("Body: " + resp.body());
+        return (
+          resp.url().includes(defaults.endpoints.messages) &&
+          resp.status() === 200
+        );
+      }),
+      Logger.info(`There are ${currentMessages?.length ?? 0} unread messages.`),
+    ]);
+*/
     return currentMessages;
   }
 
@@ -181,7 +201,7 @@ export default class EducamosWorker {
     options.headers["authorization"] = this.authorization;
 
     try {
-      Logger.info("Retrieving attachment...")
+      Logger.info("Retrieving attachment...");
       const response = await axios.request(options);
       const buffer = Buffer.from(response.data, "binary");
       return buffer;
@@ -223,17 +243,33 @@ export default class EducamosWorker {
   async getTelegramMessageFromMessageId(
     messageId: number
   ): Promise<TelegramMessage> {
-    const messageDetails = await this.getMessageDetails(messageId);
-    const telegramMessage: TelegramMessage = {
-      message: this.formatMessage(messageDetails),
-      attachments: [],
-    };
-
-    for (let adjunto of messageDetails.ficherosAdjuntos) {
-      const datosAdjunto = await this.generateAttachmentStructure(adjunto);
-      telegramMessage.attachments.push(datosAdjunto);
+    let messageDetails;
+    try {
+      messageDetails = await this.getMessageDetails(messageId);
+    } catch (err) {
+      Logger.error(
+        `Error getting message details from message ${messageId}: ` + err
+      );
+      throw err;
     }
-    return telegramMessage;
+
+    try {
+      const telegramMessage: TelegramMessage = {
+        message: this.formatMessage(messageDetails),
+        attachments: [],
+      };
+      for (let adjunto of messageDetails.ficherosAdjuntos) {
+        const datosAdjunto = await this.generateAttachmentStructure(adjunto);
+        telegramMessage.attachments.push(datosAdjunto);
+      }
+      return telegramMessage;
+    } catch (err) {
+      Logger.error(
+        `Error composing Telegram message details for message ${messageId}: ` +
+          err
+      );
+      throw err;
+    }
   }
 
   private async get(endpoint: string, headers = {}) {
@@ -251,7 +287,7 @@ export default class EducamosWorker {
     }
 
     try {
-      Logger.info(`Sending request to ${endpoint}`);
+      Logger.info(`Sending request to ${endpoint}: ${JSON.stringify(options)}`);
       const { data } = await axios.request(options);
       return data;
     } catch (err) {
@@ -316,7 +352,7 @@ ${convert(educamosMsg.cuerpoMensaje)}
       ·  \u{1F4E6}    ${filename}`;
     } else {
       return `
-      ·  \u{1F5BB}    ${filename}`;
+      ·  \u{1F4C4}    ${filename}`;
     }
   }
 }
