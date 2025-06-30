@@ -15,21 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export type EducamosMessage = {
-  id: number;
-  idDestinatarioMensaje: number;
-  asunto: string;
-  idRemitente: number;
-  remitente: string;
-  idGrupo: number;
-  grupo: string;
-  destinatarios?: string;
-  respuesta: boolean;
-  fechaMensaje: string;
-  leido: boolean;
-  adjuntos: boolean;
-  respondido?: boolean;
-  numeroDestinatarios?: number;
-  numeroLeidos?: number;
-  borradoParaTodos: boolean;
+import { EducamosAdjunto } from "./educamos-adjunto";
+import { EducamosMessage } from "./educamos-message";
+
+export type EducamosMessageDetails = EducamosMessage & {
+  idMensajeOrigen: number;
+  tituloMensaje?: string;
+  cuerpoMensaje: string;
+  ficherosAdjuntos: Array<EducamosAdjunto>;
+  conversacion: Array<string>;
+  listIdDestinatarios?: string;
+  responderTodos: boolean;
+  permiteRespuesta: boolean;
+  procedencia: string;
 };

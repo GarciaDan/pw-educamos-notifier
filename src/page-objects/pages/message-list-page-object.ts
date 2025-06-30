@@ -15,21 +15,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-export type EducamosMessage = {
-  id: number;
-  idDestinatarioMensaje: number;
-  asunto: string;
-  idRemitente: number;
-  remitente: string;
-  idGrupo: number;
-  grupo: string;
-  destinatarios?: string;
-  respuesta: boolean;
-  fechaMensaje: string;
-  leido: boolean;
-  adjuntos: boolean;
-  respondido?: boolean;
-  numeroDestinatarios?: number;
-  numeroLeidos?: number;
-  borradoParaTodos: boolean;
-};
+import { Locator, Page } from "playwright/test";
+import PageObject from "base/page-object";
+
+export default class MessageListPageObject extends PageObject {
+  static defaultSelectors(): Map<string, string> {
+    const selectors = new Map<string, string>();
+
+    selectors.set("newMessageButton", "ion-fab");
+
+    return selectors;
+  }
+
+  constructor(
+    page: Page,
+    selectors?: Map<string, string>,
+    parent?: PageObject
+  ) {
+    super(page, selectors || MessageListPageObject.defaultSelectors(), parent);
+  }
+
+  //#region Data
+
+  async getNewMessageButton(): Promise<Locator> {
+    return await this.getElement("newMessageButton");
+  }
+
+  //#endregion
+}
