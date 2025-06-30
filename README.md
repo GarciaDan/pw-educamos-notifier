@@ -21,17 +21,21 @@ To install all necessary dependencies run the command:
 ```
 npm run setup
 ```
-Then, create an `.env` file with the following environment variables:
+Then, rename the `env.sample` file to `.env` and fill the provided variables:
 ```
-EDUCAMOS_USERNAME=""
-EDUCAMOS_PASSWORD=""
-CRON_SCHEDULE="*/30 * * * *"
+EDUCAMOS_USERNAME="myuser"
+EDUCAMOS_PASSWORD="mypassword"
+NOTIFICATION_ENDPOINT="http://localhost:7887/sendmessage"
+CRON_SCHEDULE="53 8-23 * * 1-5"
 HEADLESS="true"
+LOG_LEVEL="info"
 ```
 
 You must provide your Educamos credentials, as well as the endpoint for sending the messages to Telegram. There's a basic Telegram notification service that you can use by providing your own Telegram Bot in the following repo: [https://github.com/GarciaDan/simple-telegram-server](https://github.com/GarciaDan/simple-telegram-server).
 
 If you're running the application with its service version, you should also provide a cron configuration. If you don't know how to do so, check some examples [here](https://www.man7.org/linux/man-pages/man5/crontab.5.html#EXAMPLE_CRON_FILE).
+
+Setting `HEADLESS` variable to `"true"` will execute Playwright in headless mode, and `LOG_LEVEL` will set the verbosity of the logger.
 
 ## Execution
 

@@ -1,0 +1,6 @@
+services:
+  pw-educamos-notifier:
+    build: .
+    env_file:
+      - .env
+    restart: on-failure
