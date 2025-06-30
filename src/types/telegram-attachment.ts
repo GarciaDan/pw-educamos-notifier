@@ -1,6 +1,6 @@
 // pw-educamos-notifier
-// Copyright (C) 2024 Daniel García García
-// contacto {at} danigarcia.org
+// Copyright (C) 2025 Daniel García García
+// dev {at} danigarcia.org
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,16 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import cron from "node-cron";
-import dotenv from "dotenv";
-import { redirectEducamosMessagesToTelegram } from "workers/application-worker";
-
-dotenv.config();
-
-const CRON_SCHEDULE = process.env["CRON_SCHEDULE"];
-cron.schedule(
-  CRON_SCHEDULE,
-  (async () => {
-    await redirectEducamosMessagesToTelegram;
-  })
-);
+export type TelegramAttachment = {
+    fileName: string,
+    fileBase64Content: string
+}

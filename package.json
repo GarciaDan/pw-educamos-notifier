@@ -15,14 +15,18 @@
     "telegram",
     "bot"
   ],
-  "author": "Daniel Garcia <contacto@danigarcia.org>",
+  "author": "Daniel Garcia <dev@danigarcia.org>",
   "license": "GNU GPLv3",
   "devDependencies": {
+    "@types/node": "^24.0.3"
+  },
+  "dependencies": {
     "@playwright/test": "^1.53.1",
-    "@types/node": "^24.0.3",
     "axios": "^1.10.0",
     "dotenv": "^16.5.0",
+    "html-to-text": "^9.0.5",
     "node-cron": "^4.1.1",
+    "pino": "^9.7.0",
     "playwright": "^1.53.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
