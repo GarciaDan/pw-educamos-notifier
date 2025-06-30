@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import fs from "fs";
 import { chromium, expect, Page } from "playwright/test";
 import { convert } from "html-to-text";
 import LoginPageObject from "page-objects/pages/login-page-object";
@@ -28,7 +27,6 @@ import { TelegramAttachment } from "types/telegram-attachment";
 import { EducamosAdjunto } from "types/educamos-adjunto";
 import { TelegramMessage } from "types/telegram-message";
 import { Logger } from "utils/logger";
-import MessageListPageObject from "page-objects/pages/message-list-page-object";
 
 const axios = require("axios").default;
 
@@ -72,21 +70,8 @@ export default class EducamosWorker {
 
       return messages;
     } catch (err) {
-      const errorMessage: EducamosMessage = {
-        id: 0,
-        fechaMensaje: this.getCurrentFormattedDate(),
-        asunto: "Error",
-        respuesta: false,
-        remitente: "Educamos Notifier Bot",
-        idDestinatarioMensaje: 0,
-        idRemitente: 0,
-        idGrupo: 0,
-        grupo: "Educamos Notifier Bot",
-        leido: false,
-        adjuntos: false,
-        borradoParaTodos: false,
-      };
-      return [errorMessage];
+      Logger.error("Error retrieving messages: " + err);
+      throw(err);
     } finally {
       await browser.close();
     }
@@ -128,8 +113,6 @@ export default class EducamosWorker {
   ): Promise<Array<EducamosMessage>> {
     let currentMessages: Array<EducamosMessage> = [];
 
-    const messageListPageObject = new MessageListPageObject(page);
-
     page.on("request", async (request) => {
       try {
         if (
@@ -143,12 +126,10 @@ export default class EducamosWorker {
       }
     });
 
-    await page.goto(`${defaults.baseUrl}${defaults.pages.messages}`);
-    const messageButton = await messageListPageObject.getNewMessageButton();
-    await expect(messageButton).toBeVisible();
+    await page.goto(`${defaults.baseUrl}${defaults.pages.inbox}`);
     const response = await page.waitForResponse((response) =>
       response.url().includes(defaults.endpoints.messages)
-    );
+    , {timeout: defaults.timeouts.inboxResponseTime});
 
     await expect(response.status()).toBe(200);
 
@@ -168,19 +149,6 @@ export default class EducamosWorker {
         }
       });
     }
-    /*
-    await Promise.all([
-      await page.waitForResponse((resp) => {
-        Logger.info("Body: " + resp.body());
-        console.log("Body: " + resp.body());
-        return (
-          resp.url().includes(defaults.endpoints.messages) &&
-          resp.status() === 200
-        );
-      }),
-      Logger.info(`There are ${currentMessages?.length ?? 0} unread messages.`),
-    ]);
-*/
     return currentMessages;
   }
 
@@ -287,7 +255,7 @@ export default class EducamosWorker {
     }
 
     try {
-      Logger.info(`Sending request to ${endpoint}: ${JSON.stringify(options)}`);
+      Logger.info(`Sending request to ${endpoint}`);
       const { data } = await axios.request(options);
       return data;
     } catch (err) {

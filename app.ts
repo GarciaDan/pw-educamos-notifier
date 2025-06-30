@@ -26,7 +26,7 @@ dotenv.config();
 const DEFAULT_CRON_SCHEDULE = "*/30 * * * *";
 const USERNAME = process.env["EDUCAMOS_USERNAME"];
 const PASSWORD = process.env["EDUCAMOS_PASSWORD"];
-const LOGIN_URL = `${defaults.baseUrl}/${defaults.pages.login}`;
+const LOGIN_URL = `${defaults.baseUrl}${defaults.pages.login}`;
 const NOTIFICATION_ENDPOINT = process.env["NOTIFICATION_ENDPOINT"];
 const HEADLESS = process.env["HEADLESS"] != "false";
 

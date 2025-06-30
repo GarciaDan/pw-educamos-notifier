@@ -49,7 +49,10 @@ const defaults = {
     "sec-fetch-site": "same-origin",
     connection: "keep-alive",
   },
-  maxContentLength: 6000000
+  maxContentLength: 6000000,
+  timeouts: {
+    inboxResponseTime: 60000
+  }
 };
 
 export default defaults;
