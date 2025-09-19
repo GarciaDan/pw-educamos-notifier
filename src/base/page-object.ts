@@ -263,4 +263,8 @@ export default class PageObject {
       await dialog.dismiss();
     });
   }
+
+  async getLocalStorageElement(key: string): Promise<string> {
+    return await this.page.evaluate(k => window.localStorage.getItem(k), key);
+  }
 }
