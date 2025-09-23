@@ -1,6 +1,9 @@
+name: pw-educamos-notifier
 services:
   pw-educamos-notifier:
-    build: .
+    container_name: pw-educamos-notifier
+    #build: .
+    image: pw-educamos-notifier:latest
     env_file:
       - .env
     restart: on-failure

@@ -7,7 +7,10 @@
     "setup": "npm install && npx playwright install-deps && npx playwright install",
     "once": "NODE_PATH=./src ts-node app.ts",
     "start-service": "NODE_PATH=./src ts-node app.ts schedule",
-    "pogen-inline": "npx ts-node tools/po-codegen-inline.ts"
+    "pogen-inline": "npx ts-node tools/po-codegen-inline.ts",
+    "docker-clean": "[ -f ./dist/pw-educamos-notifier.tar ] && rm ./dist/pw-educamos-notifier.tar || echo 'Continuing...'",
+    "docker-build": "docker build -t pw-educamos-notifier:latest .",
+    "docker-export": "mkdir -p dist && npm run docker-clean && npm run docker-build && docker save -o ./dist/pw-educamos-notifier.tar pw-educamos-notifier"
   },
   "keywords": [
     "playwright",

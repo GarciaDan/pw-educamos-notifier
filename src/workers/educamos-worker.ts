@@ -89,6 +89,8 @@ export default class EducamosWorker {
       const botonAvisos = await sideMenuPO.getAvisos();
       await expect(botonAvisos).toBeVisible();
       Logger.info(`Login successful`);
+      
+      this.authorization = "Bearer " + await loginPO.getLocalStorageElement("token");
     } catch (err) {
       Logger.error("Error logging in Educamos platform: " + err);
     }
@@ -119,7 +121,8 @@ export default class EducamosWorker {
           request.url() == `${defaults.baseUrl}${defaults.endpoints.messages}`
         ) {
           const headers = await request.allHeaders();
-          this.authorization = headers["authorization"];
+          Logger.info(JSON.stringify(headers))
+          //this.authorization = headers["authorization"];
         }
       } catch (err) {
         Logger.error("getMessages: request error: " + err);
@@ -253,7 +256,7 @@ export default class EducamosWorker {
     for (let key of headerKeys) {
       options.headers[key] = headers[key];
     }
-
+    Logger.info("Headers: " + JSON.stringify(options.headers));
     try {
       Logger.info(`Sending request to ${endpoint}`);
       const { data } = await axios.request(options);
