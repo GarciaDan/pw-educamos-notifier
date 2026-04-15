@@ -18,7 +18,7 @@
 const defaults = {
   baseUrl: "https://educamosclm.castillalamancha.es",
   endpoints: {
-    messages: "/back/familias/mensajes/",
+    messages: "/back/familias/mensajes",
     messageDetails: "/back/familias/mensajes/#?enviado=false",
     attachment: "/back/familias/mensajes/adjunto/#",
     leido: "/back/familias/mensajes/leido/#",
