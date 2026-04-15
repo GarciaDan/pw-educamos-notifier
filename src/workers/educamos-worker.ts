@@ -114,7 +114,7 @@ export default class EducamosWorker {
     filter: EducamosMessageFilter = { leido: false }
   ): Promise<Array<EducamosMessage>> {
     let currentMessages: Array<EducamosMessage> = [];
-
+    Logger.info("Retrieving messages...")
     page.on("request", async (request) => {
       try {
         if (
