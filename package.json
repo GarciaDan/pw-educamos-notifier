@@ -21,6 +21,7 @@
   "author": "Daniel Garcia <dev@danigarcia.org>",
   "license": "GNU GPLv3",
   "devDependencies": {
+    "@types/html-to-text": "^9.0.4",
     "@types/node": "^24.0.3"
   },
   "dependencies": {

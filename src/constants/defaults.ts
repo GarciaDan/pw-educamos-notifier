@@ -18,14 +18,15 @@
 const defaults = {
   baseUrl: "https://educamosclm.castillalamancha.es",
   endpoints: {
-    messages: "/back/familias/mensajes",
-    messageDetails: "/back/familias/mensajes/#?enviado=false",
-    attachment: "/back/familias/mensajes/adjunto/#",
-    leido: "/back/familias/mensajes/leido/#",
+    messages: "/back/comunicaciones/mensajes/recibidos",
+    messagesQuery:
+      "?page=#&numItems=50&idColectivo=-1&leido=N&anno=&historico=false",
+    messageDetails: "/back/comunicaciones/mensajes/#?enviado=false",
+    attachment: "/back/comunicaciones/mensajes/adjunto/#",
+    leido: "/back/comunicaciones/mensaje/leido/#",
   },
   pages: {
-    messages: "/familias/messages",
-    inbox: "/familias/messages/inbox",
+    inbox: "/s/messages",
     login: "/accesoeducamos/"
   },
   browserConfig: {
@@ -41,7 +42,7 @@ const defaults = {
     accept: "application/json, text/plain, */*",
     "accept-language": "es-ES,es;q=0.8,en;q=0.6,en-US;q=0.4,ca;q=0.2",
     "accept-encoding": "gzip, deflate, br, zstd",
-    referer: "https://educamosclm.castillalamancha.es/familias/messages/inbox",
+    referer: "https://educamosclm.castillalamancha.es/s/messages",
     origin: "https://educamosclm.castillalamancha.es",
     dnt: "1",
     "sec-fetch-dest": "empty",
@@ -50,9 +51,6 @@ const defaults = {
     connection: "keep-alive",
   },
   maxContentLength: 6000000,
-  timeouts: {
-    inboxResponseTime: 60000
-  }
 };
 
 export default defaults;
