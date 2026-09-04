@@ -21,7 +21,7 @@ const defaults = {
     messages: "/back/comunicaciones/mensajes/recibidos",
     messagesQuery:
       "?page=#&numItems=50&idColectivo=-1&leido=N&anno=&historico=false",
-    messageDetails: "/back/comunicaciones/mensajes/#?enviado=true",
+    messageDetails: "/back/comunicaciones/mensajes/#?enviado=false",
     attachment: "/back/comunicaciones/mensajes/adjunto/#",
     leido: "/back/comunicaciones/mensaje/leido/#",
   },

@@ -51,7 +51,7 @@ export default class EducamosWorker {
 
     try {
       Logger.info(
-        `Sending ${message.format} message with ${message.message} attachments: ${message.message}`
+        `Sending message with ${message.attachments?.length ?? 0} attachments`
       );
       await axios.request(options);
     } catch (err) {
@@ -289,7 +289,7 @@ export default class EducamosWorker {
     let messageBody = `·  \u{1F4C5}    ${educamosMsg.fechaMensaje}
 ·  \u{2709}    ${educamosMsg.remitente} ${isResponseText}
 ·  \u{270D}    ${educamosMsg.asunto}`;
-    if (educamosMsg.procedencia) {
+    if (educamosMsg.procedencia?.trim()) {
       messageBody += `
 ·  \u{1F3EB}    ${educamosMsg.procedencia}`;
     }
