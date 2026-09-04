@@ -66,7 +66,7 @@ export default class EducamosWorker {
     try {
       await this.logInEducamosPlatform(mainPage);
 
-      const messages = await this.getMessages(mainPage);
+      const messages = await this.getMessages();
 
       return messages;
     } catch (err) {
@@ -110,45 +110,46 @@ export default class EducamosWorker {
   }
 
   private async getMessages(
-    page: Page,
     filter: EducamosMessageFilter = { leido: false }
   ): Promise<Array<EducamosMessage>> {
     let currentMessages: Array<EducamosMessage> = [];
     Logger.info("Retrieving messages...")
-    page.on("request", async (request) => {
-      try {
-        if (
-          request.url() == `${defaults.baseUrl}${defaults.endpoints.messages}`
-        ) {
-          const headers = await request.allHeaders();
-          Logger.info(JSON.stringify(headers))
-          //this.authorization = headers["authorization"];
-        }
-      } catch (err) {
-        Logger.error("getMessages: request error: " + err);
+
+    // The endpoint returns a Spring pageable object: { content, last, ... }
+    let lastPage = false;
+    let pageNumber = 0;
+    while (!lastPage) {
+      const endpoint = defaults.endpoints.messagesQuery.replace(
+        "#",
+        `${pageNumber}`
+      );
+      const data = (await this.get(
+        `${defaults.endpoints.messages}${endpoint}`
+      )) as { content: Array<EducamosMessage>; last: boolean } | undefined;
+
+      if (!data) {
+        throw new Error(
+          `No data received from ${defaults.endpoints.messages} (page ${pageNumber})`
+        );
       }
-    });
 
-    await page.goto(`${defaults.baseUrl}${defaults.pages.inbox}`);
-    const response = await page.waitForResponse((response) =>
-      response.url().includes(defaults.endpoints.messages)
-    , {timeout: defaults.timeouts.inboxResponseTime});
+      currentMessages.push(...(data.content ?? []));
+      lastPage = data.last;
+      pageNumber++;
+    }
 
-    await expect(response.status()).toBe(200);
-
-    currentMessages = JSON.parse(
-      (await response.body()).toString()
-    ) as Array<EducamosMessage>;
     Logger.info(
-      `Retrieved ${currentMessages?.length ?? 0} messages from Educamos backend`
+      `Retrieved ${currentMessages.length} messages from Educamos backend`
     );
     const filterKeys = Object.keys(filter);
     for (let filterKey of filterKeys) {
       currentMessages = currentMessages.filter((m) => {
-        if (typeof m[filterKey] === "string") {
-          return m[filterKey].includes(filter[filterKey]);
+        const mRecord = m as Record<string, any>;
+        const filterRecord = filter as Record<string, any>;
+        if (typeof mRecord[filterKey] === "string") {
+          return mRecord[filterKey].includes(filterRecord[filterKey]);
         } else {
-          return m[filterKey] == filter[filterKey];
+          return mRecord[filterKey] == filterRecord[filterKey];
         }
       });
     }
@@ -164,7 +165,7 @@ export default class EducamosWorker {
       method: "GET",
       url: `${defaults.baseUrl}${endpoint}`,
       responseType: "arraybuffer",
-      headers: JSON.parse(JSON.stringify(defaults.headers)),
+      headers: JSON.parse(JSON.stringify(defaults.headers)) as Record<string, any>,
     };
 
     delete options.headers["accept"];
@@ -198,7 +199,7 @@ export default class EducamosWorker {
     const options = {
       method: "POST",
       url: `${defaults.baseUrl}${endpoint}`,
-      headers: defaults.headers,
+      headers: JSON.parse(JSON.stringify(defaults.headers)) as Record<string, any>,
     };
 
     options.headers["authorization"] = this.authorization;
@@ -231,7 +232,9 @@ export default class EducamosWorker {
       };
       for (let adjunto of messageDetails.ficherosAdjuntos) {
         const datosAdjunto = await this.generateAttachmentStructure(adjunto);
-        telegramMessage.attachments.push(datosAdjunto);
+        if (telegramMessage.attachments) {
+          telegramMessage.attachments.push(datosAdjunto);
+        }
       }
       return telegramMessage;
     } catch (err) {
@@ -243,11 +246,11 @@ export default class EducamosWorker {
     }
   }
 
-  private async get(endpoint: string, headers = {}) {
+  private async get(endpoint: string, headers: Record<string, any> = {}) {
     const options = {
       method: "GET",
       url: `${defaults.baseUrl}${endpoint}`,
-      headers: JSON.parse(JSON.stringify(defaults.headers)),
+      headers: JSON.parse(JSON.stringify(defaults.headers)) as Record<string, any>,
     };
 
     options.headers["authorization"] = this.authorization;
@@ -270,6 +273,9 @@ export default class EducamosWorker {
     datosAdjunto: EducamosAdjunto
   ): Promise<TelegramAttachment> {
     const result = await this.getAttachment(datosAdjunto.id);
+    if (!result) {
+      throw new Error(`Error al obtener el adjunto: ${datosAdjunto.nombre}`);
+    }
     const adjunto: TelegramAttachment = {
       fileName: datosAdjunto.nombre,
       fileBase64Content: result.toString("base64"),
