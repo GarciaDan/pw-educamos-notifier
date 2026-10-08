@@ -89,10 +89,18 @@ export default class EducamosWorker {
       const botonAvisos = await sideMenuPO.getAvisos();
       await expect(botonAvisos).toBeVisible();
       Logger.info(`Login successful`);
-      
-      this.authorization = "Bearer " + await loginPO.getLocalStorageElement("token");
+
+      const token = await loginPO.getLocalStorageElement("token");
+      if (!token) {
+        throw new Error(
+          "No auth token found in localStorage after login. " +
+            "The platform may have changed how it stores the token, or the login did not complete."
+        );
+      }
+      this.authorization = "Bearer " + token;
     } catch (err) {
       Logger.error("Error logging in Educamos platform: " + err);
+      throw err;
     }
   }
 

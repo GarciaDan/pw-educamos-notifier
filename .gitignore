@@ -134,3 +134,4 @@ downloads/
 
 # Artifacts
 dist/
+.playwright-mcp/*.yml
